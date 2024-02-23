@@ -13,8 +13,6 @@ namespace CityBuilder
 
         private Dictionary<ResourceType, int> playerResources;
 
-        [SerializeField] private List<CityCharacter> cityCharacters;
-
         public ControllerState State { get; set; }
 
         public void InitializeController()
@@ -51,42 +49,8 @@ namespace CityBuilder
         }
         public void StartController()
         {
-            State = ControllerState.Running;            
-
-            GameManager.instance.CameraController.OnHitObject += OnCameraControllerHitObject;
-            GameManager.instance.CameraController.OnHitPoint += CameraControllerHitPoint;
-        }
-               
-
-        private void OnCameraControllerHitObject(ISelectable hitObject)
-        {
-            switch (hitObject.SelectableType)
-            {
-                case SelectableType.Resource:
-
-                    for (int i = 0; i < cityCharacters.Count; i++)
-                    {
-                        if ((cityCharacters[i].Status == CityCharacterStatus.Idle) && (cityCharacters[i].IsSelected))
-                        {
-                            cityCharacters[i].GatherResource((IResource)hitObject);
-                        }
-                    }
-
-                    break;
-
-            }
-        }
-
-        private void CameraControllerHitPoint(Vector3 point)
-        {
-            for (int i=0; i< cityCharacters.Count; i++)
-            {
-                if ((cityCharacters[i].Status == CityCharacterStatus.Idle) && (cityCharacters[i].IsSelected))
-                {
-                    cityCharacters[i].MoveToTarget(point);
-                }
-            }
-        }        
+            State = ControllerState.Running; 
+        } 
 
 
         public void AddResource(ResourceType type, int amount)
@@ -162,9 +126,6 @@ namespace CityBuilder
 
         public void FinishController()
         {
-            GameManager.instance.CameraController.OnHitObject -= OnCameraControllerHitObject;
-            GameManager.instance.CameraController.OnHitPoint -= CameraControllerHitPoint;
-
             State = ControllerState.Completed;
         }
 

@@ -34,11 +34,17 @@ namespace CityBuilder
 
     public enum CityCharacterStatus
     {
-        Idle,
+        Free,
+        Busy,
+    };
+
+    public enum BuilderTask
+    {
+        None,
         MovingToTarget,
-        DestroyingTarget,
         GatheringResource,
     };
+
 
 
     [System.Serializable]

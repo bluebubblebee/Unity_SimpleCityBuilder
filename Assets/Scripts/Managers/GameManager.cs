@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace CityBuilder
-{    
-
+{ 
     [CreateAssetMenu(fileName = "GameData", menuName = "CityBuilder/GameData", order = 1)]
     public class GameData : ScriptableObject
     {
@@ -22,13 +21,13 @@ namespace CityBuilder
         [SerializeField] private GameData gameData; 
 
         public GameData GameData { get; private set; }
+
+        [SerializeField] private MapController mapControllerRef;
+        public MapController MapController { get { return mapControllerRef; } private set { } }
         public ResourcesController ResourcesController { get; private set; }
         public BuilderController BuilderController { get; private set; }
-
         public CameraController CameraController { get; private set; }
         public PlayerController PlayerController { get; private set; }
-
-
         private void Awake()
         {
             instance = this;
@@ -39,26 +38,31 @@ namespace CityBuilder
             GameData = gameData;
             gameState = GameState.Initialization;
 
+            if (MapController != null)
+            {
+                MapController.InitializeController();
+            } 
+
             ResourcesController = GetComponentInChildren<ResourcesController>();
-            if (ResourcesController)
+            if (ResourcesController != null)
             {
                 ResourcesController.InitializeController();
             }
 
             BuilderController = GetComponent<BuilderController>();
-            if (BuilderController)
+            if (BuilderController != null)
             {
                 BuilderController.InitializeController();
             }
 
             PlayerController = GetComponent<PlayerController>();
-            if (PlayerController)
+            if (PlayerController != null)
             {
                 PlayerController.InitializeController();
             }
 
             CameraController = GetComponent<CameraController>();
-            if (CameraController)
+            if (CameraController != null)
             {
                 CameraController.InitializeController();
             }
@@ -70,6 +74,7 @@ namespace CityBuilder
         {
             gameState = GameState.SetupGame;
 
+            yield return MapController.SetupController();
             yield return ResourcesController.SetupController();
             yield return PlayerController.SetupController();
             yield return BuilderController.SetupController();
@@ -80,6 +85,7 @@ namespace CityBuilder
 
         private void StartGame()
         {
+            MapController.StartController();
             ResourcesController.StartController();
             PlayerController.StartController();
             BuilderController.StartController();

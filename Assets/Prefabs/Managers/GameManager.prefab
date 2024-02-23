@@ -236,13 +236,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e7f940715558f943ab7a472538c5f46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ResourceObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   xMinSpawnLoc: -118
   xMaxSpawnLoc: 118
   zMinSpawnLoc: -60
@@ -276,7 +269,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4087405408871969592
 Transform:
   m_ObjectHideFlags: 0
@@ -393,6 +386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameData: {fileID: 11400000, guid: 2baf2ca21c4298c42887b57506869e3b, type: 2}
+  mapControllerRef: {fileID: 0}
 --- !u!114 &2449056687700760892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,8 +413,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraGame: {fileID: 0}
-  zoomLimits: {x: 4, y: 14}
   cameraSpeed: 30
+  zoomLimits: {x: 4, y: 14}
   zoomObject: {fileID: 984764262570175077}
 --- !u!114 &3887645530405607135
 MonoBehaviour:

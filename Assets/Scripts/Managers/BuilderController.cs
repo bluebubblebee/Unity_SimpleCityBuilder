@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace CityBuilder
-{    
-
+{  
     public class BuilderController : MonoBehaviour, IController
     {
         public delegate void OnBuilderStateChangeAction(BuilderStateEnum newState);
@@ -13,7 +12,7 @@ namespace CityBuilder
         [SerializeField] private BuilderUI builderUI;
 
         [SerializeField] Material buildingPreviewMat;
-        //private Mesh buildingPreviewMesh;
+
         private GameObject buildingToPlaceObject;       
 
         private BuildingObjectType buildingToPlace = null;
@@ -68,7 +67,6 @@ namespace CityBuilder
                 Vector3 placeObjectPos = new Vector3(hit.point.x, 0.0f, hit.point.z);
                 buildingToPlaceObject.transform.position = placeObjectPos;
 
-                //Debug.Log("<color=cyan>" + "isPlacingBuilding: " + hit.point + "</color>");
 
                 if (Input.GetMouseButtonDown(0)) // Left button, place object
                 {

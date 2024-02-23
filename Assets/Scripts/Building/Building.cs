@@ -8,7 +8,6 @@ namespace CityBuilder
     public class Building : MonoBehaviour, ISelectable
     {
         [SerializeField] private GameObject selectionObject;
-
         public SelectableType SelectableType { get; set; } = SelectableType.Building;
 
         public bool IsSelected { get; set; }
