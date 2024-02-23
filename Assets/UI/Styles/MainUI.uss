@@ -1,0 +1,11 @@
+.label {
+    -unity-font: url('project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&guid=1b24c829eb909d049bbd8c199dce58fc&type=3#NotInter-Regular');
+    color: rgb(0, 0, 0);
+    -unity-font-style: bold;
+    font-size: 24px;
+    -unity-text-outline-width: 0;
+    -unity-text-outline-color: rgb(0, 0, 0);
+}
+
+.button {
+}

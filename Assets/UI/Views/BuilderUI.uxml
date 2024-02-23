@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="BuildingButton" src="project://database/Assets/UI/Templates/BuildingButton.uxml?fileID=9197481963319205126&amp;guid=a96dadba570733a40b08bcf37b135759&amp;type=3#BuildingButton" />
+    <Style src="project://database/Assets/UI/Styles/MainUI.uss?fileID=7433441132597879392&amp;guid=27fc9dca0062e0c4588d18d74677c523&amp;type=3#MainUI" />
+    <ui:VisualElement name="ContentView" style="flex-grow: 1; position: absolute; height: 372px; width: 563px; background-color: rgba(0, 0, 0, 0.43); top: 690px; left: 16px;">
+        <ui:Instance template="BuildingButton" name="PotionShopBuildingTemplate" />
+        <ui:Instance template="BuildingButton" name="RestTentBuildingTemplate" style="position: absolute; left: 270px;" />
+    </ui:VisualElement>
+</ui:UXML>
