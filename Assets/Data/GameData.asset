@@ -15,22 +15,17 @@ MonoBehaviour:
   GameResources:
   - Type: 0
     AmountResource: 20
-    RequiredReource:
-      Type: 0
-      Amount: 0
     TotalHealth: 50
     SizePool: 20
     prefab: {fileID: 549247502384352550, guid: 3f434a9f074708645b1e263ee0165d54, type: 3}
   - Type: 1
     AmountResource: 15
-    RequiredReource:
-      Type: 0
-      Amount: 0
     TotalHealth: 80
     SizePool: 20
     prefab: {fileID: 549247502384352550, guid: 7db7ad49ea4977c4080eb0f0d0e36fad, type: 3}
   BuildingData:
   - Type: 0
+    TotalTimeToBuild: 20
     Prefab: {fileID: 4589402195283151074, guid: f57620faa7f86d84b91b7d97fe00cc61,
       type: 3}
     RequiredResources:
@@ -39,6 +34,7 @@ MonoBehaviour:
     - Type: 1
       Amount: 50
   - Type: 1
+    TotalTimeToBuild: 10
     Prefab: {fileID: 4589402195283151074, guid: 0e5a4cfae31a9324da92b8772d3f1fff,
       type: 3}
     RequiredResources:

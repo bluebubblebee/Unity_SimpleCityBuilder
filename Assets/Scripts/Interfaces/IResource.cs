@@ -9,11 +9,11 @@ namespace CityBuilder
     public interface IResource
     {
         event OnResourceGatheredAction OnResourceGathered;
-
         public ResourceType ResourceType { get; set; }        
         public int TotalHealth { get; set; }
         public int CurrentHealth { get; set; }
         public bool HasBeenGathered { get; set; }
-        public void Hit(int damage);
+        public void Hit(int damage);      
+        
     }
 }

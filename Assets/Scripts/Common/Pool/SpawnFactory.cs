@@ -7,7 +7,6 @@ namespace CityBuilder
     public class SpawnFactory : MonoBehaviour
     {
         private Dictionary<string, List<ISpawnable>> poolDictionary;
-
         public void InitializenFactory()
         {
             poolDictionary = new Dictionary<string, List<ISpawnable>>();

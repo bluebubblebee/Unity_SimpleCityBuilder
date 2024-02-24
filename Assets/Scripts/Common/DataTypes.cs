@@ -43,6 +43,7 @@ namespace CityBuilder
         None,
         MovingToTarget,
         GatheringResource,
+        Build,
     };
 
 
@@ -51,6 +52,8 @@ namespace CityBuilder
     public class BuildingObjectType
     {
         public BuildingType Type;
+
+        public float TotalTimeToBuild;
 
         public GameObject Prefab;
 

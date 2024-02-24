@@ -22,8 +22,6 @@ namespace CityBuilder
             playerResources = new Dictionary<ResourceType, int>();
             playerResources.Add(ResourceType.Wood, 0);
             playerResources.Add(ResourceType.Stone, 0);
-            playerResources.Add(ResourceType.Money, 0);
-            playerResources.Add(ResourceType.Mana, 100);
             playerResources.Add(ResourceType.Food, 100);
 
             playerUI.Initialize();
@@ -51,8 +49,6 @@ namespace CityBuilder
         {
             State = ControllerState.Running; 
         } 
-
-
         public void AddResource(ResourceType type, int amount)
         {
             if (playerResources.ContainsKey(type))
@@ -64,6 +60,19 @@ namespace CityBuilder
 
             UpdateUI();
         }
+
+        public void ReduceResource(ResourceType type, int amount)
+        {
+            if (playerResources.ContainsKey(type))
+            {
+                playerResources[type] -= amount;
+                playerResources[type] = Mathf.Clamp(playerResources[type], 0, 1000000);
+                OnResourceUpdated?.Invoke(type, playerResources[type]);
+            }
+
+            UpdateUI();
+        }
+
         public void SetResource(ResourceType type, int amount)
         {
             if(playerResources.ContainsKey(type))
@@ -120,9 +129,7 @@ namespace CityBuilder
 
             playerUI.WoodLabel.text = "Wood: " + playerResources[ResourceType.Wood];           
             playerUI.StoneLabel.text = "Stone: " + playerResources[ResourceType.Stone];
-            playerUI.ManaLabel.text = "Mana: " + playerResources[ResourceType.Mana];
         }
-
 
         public void FinishController()
         {

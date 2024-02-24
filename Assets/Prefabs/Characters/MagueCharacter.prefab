@@ -136,6 +136,7 @@ MonoBehaviour:
   selection: {fileID: 2138662938440192199}
   animator: {fileID: 1126167942522851079}
   attackStrength: 10
+  buildSpeed: 2
 --- !u!136 &2391532241723113899
 CapsuleCollider:
   m_ObjectHideFlags: 0

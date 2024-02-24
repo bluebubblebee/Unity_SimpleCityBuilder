@@ -78,8 +78,12 @@ namespace CityBuilder
             GameManager.instance.CameraController.OnHitObject += OnCameraControllerHitObject;
             GameManager.instance.CameraController.OnHitPoint += CameraControllerHitPoint;
 
+            GameManager.instance.BuilderController.OnStartBuilding += BuilderController_OnStartBuilding;
+
             State = ControllerState.Running;
         }
+
+       
 
         public void FinishController()
         {
@@ -99,10 +103,7 @@ namespace CityBuilder
                     for (int i = 0; i < CityCharacters.Count; i++)
                     {
                         CityCharacter cityChar = CityCharacters[i];
-                        if (/*(cityChar.Status == CityCharacterStatus.Free) && */(cityChar.IsSelected))
-                        {
-                            cityChar.GatherResource((IResource)hitObject);
-                        }
+                        cityChar.GatherResource((IResource)hitObject);
                     }
 
                     break;
@@ -114,14 +115,17 @@ namespace CityBuilder
             for (int i = 0; i < CityCharacters.Count; i++)
             {
                 CityCharacter cityChar = CityCharacters[i];
-
-                if (/*(cityChar.Status == CityCharacterStatus.Free) &&*/ (cityChar.IsSelected))
-                {
-                    cityChar.MoveToTarget(point);
-                }
+                cityChar.MoveToTarget(point);
             }
-
         }
 
+        private void BuilderController_OnStartBuilding(IBuilding building)
+        {
+            for (int i = 0; i < CityCharacters.Count; i++)
+            {
+                CityCharacter cityChar = CityCharacters[i];
+                cityChar.SendToBuild(building);
+            }
+        }
     }
 }

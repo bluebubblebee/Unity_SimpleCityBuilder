@@ -6,14 +6,13 @@ namespace CityBuilder
 {  
     public class BuilderController : MonoBehaviour, IController
     {
-        public delegate void OnBuilderStateChangeAction(BuilderStateEnum newState);
-        public event OnBuilderStateChangeAction OnBuilderStateChange;
+        public delegate void OnStartBuildingAction(IBuilding building);
+        public event OnStartBuildingAction OnStartBuilding;
 
         [SerializeField] private BuilderUI builderUI;
 
-        [SerializeField] Material buildingPreviewMat;
-
-        private GameObject buildingToPlaceObject;       
+        private GameObject buildingToPlaceObject;
+        private IBuilding buildingToBuild;
 
         private BuildingObjectType buildingToPlace = null;
 
@@ -67,21 +66,22 @@ namespace CityBuilder
                 Vector3 placeObjectPos = new Vector3(hit.point.x, 0.0f, hit.point.z);
                 buildingToPlaceObject.transform.position = placeObjectPos;
 
-
                 if (Input.GetMouseButtonDown(0)) // Left button, place object
                 {
                     buildingToPlaceObject.transform.position = placeObjectPos;
 
                     GameManager.instance.PlayerController.ReduceResources(buildingToPlace.RequiredResources);
 
+                    buildingToBuild.PositionBuild = placeObjectPos;
+
                     BuilderState = BuilderStateEnum.Idle;
-                    OnBuilderStateChange?.Invoke(BuilderState);
+                    OnStartBuilding?.Invoke(buildingToBuild);
+
                 }
                 else if (Input.GetMouseButtonDown(1)) // Right button, cancle object
                 {
                     Destroy(buildingToPlaceObject);
                     BuilderState = BuilderStateEnum.Idle;
-                    OnBuilderStateChange?.Invoke(BuilderState);
                 }
             }
         }
@@ -137,13 +137,21 @@ namespace CityBuilder
                     GameObject prefab = GameManager.instance.GameData.BuildingData[i].Prefab;
                     buildingToPlaceObject = Instantiate(prefab);
                     buildingToPlaceObject.transform.position = Vector3.zero;
-                    //buildingPreviewMesh = buildingToPlace.GetComponentInChildren<MeshFilter>().sharedMesh;
+
+                    buildingToBuild = buildingToPlaceObject.GetComponent<IBuilding>();
+                    if (buildingToBuild != null)
+                    {
+                        buildingToBuild.CurrentBuildProgress = 0.0f;
+                        buildingToBuild.TotalBuildProgress = GameManager.instance.GameData.BuildingData[i].TotalTimeToBuild;
+
+                        buildingToBuild.StartPlacingBuild();
+                    }
+
                     break;
                 }
             }
 
             BuilderState = BuilderStateEnum.PlacingBuilding;
-            OnBuilderStateChange?.Invoke(BuilderState);
         }
 
     }

@@ -5,7 +5,6 @@ namespace CityBuilder
 {
     public class ResourceObject : MonoBehaviour, IResource, ISpawnable, ISelectable
     {
-        //[SerializeField] private ResourceType type;
         [SerializeField] private GameObject selectionObject;
 
         public event SpawnAction OnActivateSpawn;
@@ -26,8 +25,7 @@ namespace CityBuilder
         public GameObject GetSpawnObject { get { return gameObject; } set { } }
 
         public SelectableType SelectableType { get; set; } = SelectableType.Resource;
-        public bool IsSelected { get ; set ; }
-        
+        public bool IsSelected { get ; set ; }       
 
         void Start()
         {

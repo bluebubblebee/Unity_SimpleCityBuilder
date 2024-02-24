@@ -12,8 +12,6 @@ namespace CityBuilder
         public bool Completed;
 
     }
-
-
     public class CityCharacter : MonoBehaviour, ICityCharacter, ISelectable
     {
         public CityCharacterStatus Status { get; set; }
@@ -24,14 +22,18 @@ namespace CityBuilder
         [SerializeField] private GameObject selection;
         [SerializeField] private Animator animator;
         [SerializeField] private int attackStrength;
+        [SerializeField] private int buildSpeed;
 
         private IResource currentResource;
-        private Vector3 currentResourcePosition;
+        private IBuilding currentBuilding;
+
+        private Vector3 nextPosition;
         private Coroutine currentTask;
 
         private Queue<CityCharacterTask> taskQueue;
         private CityCharacterTask currentCityTask;
         private float totalDistanceToTarget;
+        private float stoppingDistance = 8.0f;
 
         private void Start()
         {
@@ -45,10 +47,13 @@ namespace CityBuilder
             {
                 StopCoroutine(currentTask);                
             }
-
+            currentTask = null;
             taskQueue = new Queue<CityCharacterTask>();
+            currentCityTask = null;
+
+            UnSelect();
             Status = CityCharacterStatus.Free;
-            animator.SetBool("Spellcasting", false);
+            animator.SetBool("Spellcasting", false);            
         }
 
         private bool CanChangeTask()
@@ -57,7 +62,7 @@ namespace CityBuilder
             { 
                 if ((currentCityTask != null) && (!currentCityTask.Completed))
                 {
-                    if (currentCityTask.TaskType == BuilderTask.GatheringResource)
+                    if ((currentCityTask.TaskType == BuilderTask.GatheringResource) || (currentCityTask.TaskType == BuilderTask.Build))
                     {
                         return false;
                     }
@@ -71,6 +76,8 @@ namespace CityBuilder
         {
             if (!CanChangeTask()) return;
 
+            if (!IsSelected) return;
+
             StopCurrentTask();
 
             taskQueue = new Queue<CityCharacterTask>();
@@ -83,21 +90,26 @@ namespace CityBuilder
 
             Status = CityCharacterStatus.Busy;
             navMeshAgent.destination = target;
-            navMeshAgent.stoppingDistance = 4;
+
+            stoppingDistance = 4.0f;
+            navMeshAgent.stoppingDistance = stoppingDistance;            
 
             totalDistanceToTarget = Vector3.Distance(transform.position, navMeshAgent.destination);
 
             Status = CityCharacterStatus.Busy;
+
+            Select();
             currentTask = StartCoroutine(HandleQueueTasks());
         }
 
-
         public void GatherResource(IResource resource)
         {
+            if (!IsSelected) return;
+
             StopCurrentTask();
 
             currentResource = resource;
-            currentResourcePosition = ((ISpawnable)currentResource).CurrentPostion;
+            nextPosition = ((ISpawnable)currentResource).CurrentPostion;
 
             CityCharacterTask task0 = new CityCharacterTask();
             task0.TaskType = BuilderTask.MovingToTarget;
@@ -111,16 +123,50 @@ namespace CityBuilder
 
             taskQueue.Enqueue(task0);
             taskQueue.Enqueue(task1);
-            
-            navMeshAgent.destination = currentResourcePosition;
-            navMeshAgent.stoppingDistance = 8;
 
-            totalDistanceToTarget = Vector3.Distance(transform.position, navMeshAgent.destination);
+            totalDistanceToTarget = Vector3.Distance(transform.position, nextPosition);            
 
             Status = CityCharacterStatus.Busy;
-            currentTask = StartCoroutine(HandleQueueTasks());
 
+            navMeshAgent.destination = nextPosition;
+            stoppingDistance = 8.0f;
+            navMeshAgent.stoppingDistance = stoppingDistance;
+
+            currentTask = StartCoroutine(HandleQueueTasks());        
         }
+
+        public void SendToBuild(IBuilding building)
+        {
+            if (Status == CityCharacterStatus.Busy) return;
+
+            StopCurrentTask();
+
+            currentBuilding = building;
+            nextPosition = currentBuilding.PositionBuild;
+
+            CityCharacterTask task0 = new CityCharacterTask();
+            task0.TaskType = BuilderTask.MovingToTarget;
+            task0.Completed = false;
+
+            CityCharacterTask task1 = new CityCharacterTask();
+            task1.TaskType = BuilderTask.Build;
+            task1.Completed = false;
+
+            taskQueue = new Queue<CityCharacterTask>();
+
+            taskQueue.Enqueue(task0);
+            taskQueue.Enqueue(task1);
+
+            totalDistanceToTarget = Vector3.Distance(transform.position, nextPosition);
+
+            Status = CityCharacterStatus.Busy;
+
+            navMeshAgent.destination = nextPosition;
+            stoppingDistance = 21.0f;
+            navMeshAgent.stoppingDistance = stoppingDistance;
+
+            currentTask = StartCoroutine(HandleQueueTasks());
+        }       
 
         private IEnumerator HandleQueueTasks()
         {
@@ -139,6 +185,9 @@ namespace CityBuilder
                     case BuilderTask.GatheringResource:
                         yield return WaitToGatherResource();
                         break;
+                    case BuilderTask.Build:
+                        yield return WaitToBuild();
+                        break;
 
                 }
 
@@ -153,7 +202,7 @@ namespace CityBuilder
         {
             navMeshAgent.isStopped = false;
 
-            while (totalDistanceToTarget > 8.0f)
+            while (totalDistanceToTarget > stoppingDistance)
             {
                 totalDistanceToTarget = Vector3.Distance(transform.position, navMeshAgent.destination);
 
@@ -169,12 +218,11 @@ namespace CityBuilder
             navMeshAgent.isStopped = true;
         }
 
-
         private IEnumerator WaitToGatherResource()
         {
             if ((currentResource != null) && !currentResource.HasBeenGathered)
             {
-                transform.LookAt(currentResourcePosition, Vector3.up);
+                transform.LookAt(nextPosition, Vector3.up);
 
                 animator.SetBool("Spellcasting", true);
 
@@ -190,8 +238,27 @@ namespace CityBuilder
             UnSelect();
 
             yield break;
-        }              
+        }   
 
+        private IEnumerator WaitToBuild()
+        {
+            if ((currentBuilding != null) && !currentBuilding.HasBeenBuild)
+            {
+                transform.LookAt(nextPosition, Vector3.up);
+
+                animator.SetBool("Spellcasting", true);
+
+                while ((currentBuilding != null) && !currentBuilding.HasBeenBuild)
+                {
+                    yield return new WaitForSeconds(0.7f);
+                    currentBuilding.Build(buildSpeed);
+                }
+            }
+
+            animator.SetBool("Spellcasting", false);
+            currentBuilding = null;
+            UnSelect();
+        }
 
         public void ToggleSelection()
         {
@@ -201,9 +268,14 @@ namespace CityBuilder
             }
             else
             {
-                IsSelected = true;
-                selection.SetActive(true);
+                Select();
             }
+        }
+
+        private void Select()
+        {
+            IsSelected = true;
+            selection.SetActive(true);
         }
 
         private void UnSelect()
@@ -211,6 +283,5 @@ namespace CityBuilder
             IsSelected = false;
             selection.SetActive(false);
         }
-
     }
 }

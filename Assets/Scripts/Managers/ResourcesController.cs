@@ -9,8 +9,6 @@ namespace CityBuilder
     {
         Wood,
         Stone,
-        Mana,
-        Money,
         Food
     };
 
@@ -20,7 +18,6 @@ namespace CityBuilder
         public ResourceType Type;
         public int Amount;
     }
-
 
     [System.Serializable]
     public class ResourceObjectType
@@ -41,7 +38,11 @@ namespace CityBuilder
 
     public class ResourcesController : MonoBehaviour, IController
     {
-       // [SerializeField] private List<ResourceObject> ResourceObjects;
+        [SerializeField] private float xMinSpawnLoc = -108.0f;
+        [SerializeField] private float xMaxSpawnLoc = 0.0f;
+        [SerializeField] private float zMinSpawnLoc = 80.0f;
+        [SerializeField] private float zMaxSpawnLoc = 80.0f;
+
         public ControllerState State { get; set; }
 
         private SpawnFactory spawnFactory;
@@ -52,24 +53,7 @@ namespace CityBuilder
             State = ControllerState.Initialization;
 
             spawnFactory = GetComponent<SpawnFactory>();
-            spawnFactory.InitializenFactory();
-
-            /*for (int i =0; i< ResourceObjects.Count; i++)
-            {
-                for (int j=0; j< GameManager.instance.GameData.GameResources.Count; j++)
-                {
-                    ResourceObjectType resourceType = GameManager.instance.GameData.GameResources[j];
-                    if (ResourceObjects[i].Type == resourceType.Type)
-                    {
-                        ResourceObjects[i].TotalHealth = resourceType.TotalHealth;
-                        ResourceObjects[i].CurrentHealth = resourceType.TotalHealth;
-                        ResourceObjects[i].Amount = resourceType.AmountResource;
-
-                        break;
-                    }
-                }
-            }*/
-            
+            spawnFactory.InitializenFactory();            
         }
 
         public IEnumerator SetupController()
@@ -82,42 +66,32 @@ namespace CityBuilder
 
         private void CreateInstances()
         {
-            //for (int i = 0; i < ResourceObjects.Count; i++)
+            for (int j = 0; j < GameManager.instance.GameData.GameResources.Count; j++)
             {
-                for (int j = 0; j < GameManager.instance.GameData.GameResources.Count; j++)
+                ResourceObjectType resourceObject = GameManager.instance.GameData.GameResources[j];
+
+                List<ISpawnable> spawnList = spawnFactory.CreateListSpawns(resourceObject.Type.ToString(), resourceObject.SizePool, resourceObject.prefab, -20.0f);
+
+                for (int z = 0; z < spawnList.Count; z++)
                 {
-                    ResourceObjectType resourceObject = GameManager.instance.GameData.GameResources[j];
 
-                    List<ISpawnable> spawnList = spawnFactory.CreateListSpawns(resourceObject.Type.ToString(), resourceObject.SizePool, resourceObject.prefab, -20.0f);
-
-                    for (int z = 0; z < spawnList.Count; z++)
+                    ResourceObject resourceSpawned = spawnList[z].GetSpawnObject.GetComponent<ResourceObject>();
+                    if (resourceSpawned != null)
                     {
+                        resourceSpawned.ResourceType = resourceObject.Type;
+                        resourceSpawned.TotalHealth = resourceObject.TotalHealth;
+                        resourceSpawned.CurrentHealth = resourceObject.TotalHealth;
+                        resourceSpawned.HasBeenGathered = false;
 
-                        ResourceObject resourceSpawned = spawnList[z].GetSpawnObject.GetComponent<ResourceObject>();
-                        if (resourceSpawned != null)
-                        {
-                            resourceSpawned.ResourceType = resourceObject.Type;
-                            resourceSpawned.TotalHealth = resourceObject.TotalHealth;
-                            resourceSpawned.CurrentHealth = resourceObject.TotalHealth;
-                            resourceSpawned.HasBeenGathered = false;
-
-                            resourceSpawned.Amount = resourceObject.AmountResource;
-                        }
+                        resourceSpawned.Amount = resourceObject.AmountResource;
                     }
-
                 }
-            }
-        }
-
-        [SerializeField] private float xMinSpawnLoc = -108.0f;
-        [SerializeField] private float xMaxSpawnLoc = 0.0f;
-        [SerializeField] private float zMinSpawnLoc = 80.0f;
-        [SerializeField] private float zMaxSpawnLoc = 80.0f;
+            }            
+        }        
 
         public void StartController()
         {
             State = ControllerState.Running;
-
             
             // 5 Rocks, 5 Trees
             for (int i = 0; i < 5; i++)
@@ -169,6 +143,8 @@ namespace CityBuilder
 
         public void FinishController()
         {
+            spawnFactory.ClearFactory();
+
             State = ControllerState.Completed;
         }
     }

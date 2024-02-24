@@ -17,11 +17,6 @@ namespace CityBuilder
             get; private set;
         }
 
-        public Label ManaLabel
-        {
-            get; private set;
-        }
-
         public Label StoneLabel
         {
             get; private set;
@@ -40,7 +35,6 @@ namespace CityBuilder
         private void SetReferences()
         {
             WoodLabel = uiDocument.rootVisualElement.Query<Label>("WoodLabel");
-            ManaLabel = uiDocument.rootVisualElement.Query<Label>("ManaLabel");
             StoneLabel = uiDocument.rootVisualElement.Query<Label>("StoneLabel");
 
             popupElement = uiDocument.rootVisualElement.Query<VisualElement>("PopupMessage");
