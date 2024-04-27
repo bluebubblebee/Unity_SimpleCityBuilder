@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CityBuilder
 {
+#if UNITY_EDITOR
     public class CityBuilderTool : EditorWindow
     {
         private int currentToolState = 0;
@@ -144,4 +145,5 @@ namespace CityBuilder
         }
 
     }
+#endif
 }
